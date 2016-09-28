@@ -8,11 +8,11 @@ shinyServer(
       desLA <- which(SpPolysDF@data$council %in% input$LA)
       data <- SpPolysDF[desLA,]
     })
-    output$LAplot<-renderLeaflet({
-        lP<-leaflet(SpPolysLA)%>%
-        addTiles()%>%
-        addPolygons(smoothFactor = 1, weight = 1.5, fillOpacity = 0.7,
-                  fillColor = "grey", color = "black")
+    output$LAplot<-renderMapview({
+        lP<-mapView(SpPolysLA) #%>%
+      #  addTiles()%>%
+      #  addPolygons(smoothFactor = 1, weight = 1.5, fillOpacity = 0.7,
+      #            fillColor = "grey", color = "black")
     })
     
     output$neighbourhoodPlot <- renderLeaflet({
