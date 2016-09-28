@@ -22,3 +22,5 @@ SpPolysLA@data$CODE <- as.character(SpPolysLA@data$CODE)
 SpPolysLA <- SpPolysLA[order(SpPolysLA@data$NAME),]
 #save RDS
 saveRDS(SpPolysLA, "Q:/WRDashboard/LAPolys.rds")
+
+##Datazone shapes were sourced from CPOP maps

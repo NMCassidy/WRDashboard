@@ -12,17 +12,27 @@ shinyUI(dashboardPage(
     tabItems(
       tabItem(tabName = "lamap",
            fluidRow(
-            column(width = 3,box(actionButton("selectAll", label = "Select All"),
-                                 actionButton("deselectAll", label = "Select None"),
-                                 checkboxGroupInput("LA", "Select a LA", 
-                  unique(SpPolysLA@data$NAME), selected = unique(SpPolysLA@data$NAME)), width = NULL)),
-            column(width = 9, box(leafletOutput("newplot", height = "700px"), width = NULL))
-                             )
-        #   tags$head(tags$style("row1{height:800px}")),
-)
+             column(width = 12, box(leafletOutput("LAplot", height = "700px"), width = NULL))
            )
-    )
+      ),
+      tabItem(tabName = "dzmap",
+              fluidRow(
+                column(width = 6,box(actionButton("selectAll", label = "Select All"),
+                                     actionButton("deselectAll", label = "Select None"),
+              checkboxGroupInput("LA", "Select a LA", 
+                                 unique(SpPolysDF@data$council), selected = unique(SpPolysDF@data$council), width = NULL)
+                              )    
+                ),
+                column(width = 6,
+                     box(
+                       leafletOutput("neighbourhoodPlot", height = "700px")
+                     )
+                )
+              )
+           )
+      )
   
     )
   
+  )
 )

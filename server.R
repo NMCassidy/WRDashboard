@@ -3,22 +3,25 @@ shinyServer(
     clrs<-brewer.pal(10, "RdYlGn")
     pal<- colorNumeric(clrs, SpPolysDF@data$scsimd2012decile)
     
+    #Subset data based on checkbox
     data <- reactive({
-      desLA <- which(SpPolysLA@data$NAME %in% input$LA)
-      data <- SpPolysLA[desLA,]
+      desLA <- which(SpPolysDF@data$council %in% input$LA)
+      data <- SpPolysDF[desLA,]
     })
-    output$newplot<-renderLeaflet({
-      if(!is.null(input$LA)){
-        p<-leaflet(data())%>%
+    output$LAplot<-renderLeaflet({
+        lP<-leaflet(SpPolysLA)%>%
         addTiles()%>%
-        addPolygons(smoothFactor = 0.5, weight = 1.5, fillOpacity = 0.7,
+        addPolygons(smoothFactor = 1, weight = 1.5, fillOpacity = 0.7,
                   fillColor = "grey", color = "black")
-      } else if(is.null(input$LA)){
-        p <- leaflet()%>%
-          addTiles() %>%
-          setView(lng = -4.160495, lat = 58, zoom = 6)
-      }
     })
+    
+    output$neighbourhoodPlot <- renderLeaflet({
+      nP <- leaflet(data()) %>%
+        addTiles() %>%
+        addPolygons(smoothFactor = 1, weight = 1.5, fillOpacity = 0.7,
+                    fillColor = "grey", color = "black")
+    })
+    
     
     observeEvent(
     eventExpr = input$selectAll,
@@ -26,7 +29,7 @@ shinyServer(
     {
         updateCheckboxGroupInput(session = session,
                                  inputId = "LA",
-                                 selected = unique(SpPolysLA@data$NAME))
+                                 selected = unique(SpPolysDF@data$council))
       }
     )
     observeEvent(
