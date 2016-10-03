@@ -15,18 +15,47 @@ shinyUI(dashboardPage(
              column(width = 12, box(mapviewOutput("LAplot", height = "700px"), width = NULL))
            )
       ),
+      tabItem(tabName = "ladata",
+            fluidRow(
+              column(width = 4, box(
+                checkboxGroupInput("LA", "Select a LA", 
+                unique(SpPolysDF@data$council), selected = unique(SpPolysDF@data$council))
+                                )
+              ),
+              column(width = 8,
+                        box(
+                          selectInput("laDomain", "Select Domain",unique(LAdta[!is.na(LAdta$Domain), 8]), selected = NULL)
+                          ), box(
+                          uiOutput("laSubDomUI")
+                          ), box(
+                          uiOutput("laIndicatorUI")
+                          ), box(
+                          uiOutput("laYearUI")
+                          )
+                      )
+              ),
+              column(width = 8,
+                     box(
+                       
+                    )
+              )
+        
+      ),
+      
+      
       tabItem(tabName = "dzmap",
               fluidRow(
                 column(width = 4,box(actionButton("selectAll", label = "Select All"),
                                      actionButton("deselectAll", label = "Select None"),
               checkboxGroupInput("LA", "Select a LA", 
-                                 unique(SpPolysDF@data$council), selected = unique(SpPolysDF@data$council), width = NULL)
+                                 unique(SpPolysDF@data$council), selected = unique(SpPolysDF@data$council))
                               )    
                 ),
                 column(width = 8,
                      box(
                        leafletOutput("neighbourhoodPlot", height = "700px"), width=NULL
-                     )
+                     ),
+                     box(actionButton("rerend", "Rerender Map"))
                 )
               )
            )
