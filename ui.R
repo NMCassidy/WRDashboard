@@ -17,14 +17,14 @@ shinyUI(dashboardPage(
       ),
       tabItem(tabName = "ladata",
             fluidRow(
-              column(width = 4, box(
+              column(width = 3, box(
                 checkboxGroupInput("LA", "Select a LA", 
-                unique(SpPolysDF@data$council), selected = unique(SpPolysDF@data$council))
+                unique(LAdta$`Local Authority`), selected = unique(LAdta$`Local Authority`)), width =NULL
                                 )
               ),
-              column(width = 8,
+              column(width = 9,
                         box(
-                          selectInput("laDomain", "Select Domain",unique(LAdta[!is.na(LAdta$Domain), 8]), selected = NULL)
+                          selectInput("laDomain", "Select Domain",unique(LAdta[!is.na(LAdta$Domain), 8]), selected = "Mid-Year Estimates")
                           ), box(
                           uiOutput("laSubDomUI")
                           ), box(
@@ -32,30 +32,32 @@ shinyUI(dashboardPage(
                           ), box(
                           uiOutput("laYearUI")
                           )
-                      )
-              ),
+                      ),
               column(width = 8,
                      box(
-                       
-                    )
+                       DT::dataTableOutput("LABasicStats")
+                    ),
+                    box(plotOutput("LABarGraph"))
               )
-        
+            )
       ),
       
       
       tabItem(tabName = "dzmap",
               fluidRow(
-                column(width = 4,box(actionButton("selectAll", label = "Select All"),
-                                     actionButton("deselectAll", label = "Select None"),
-              checkboxGroupInput("LA", "Select a LA", 
+                column(width = 3,box(actionButton("selectAllDZ", label = "Select All"),
+                                     actionButton("deselectAllDZ", label = "Select None"),
+              checkboxGroupInput("datazoneLA", "Select a LA", 
                                  unique(SpPolysDF@data$council), selected = unique(SpPolysDF@data$council))
-                              )    
+                              ,width = NULL)    
                 ),
                 column(width = 8,
                      box(
                        leafletOutput("neighbourhoodPlot", height = "700px"), width=NULL
                      ),
-                     box(actionButton("rerend", "Rerender Map"))
+                     box(
+                       actionButton("rerend", "ReRender map")
+                     )
                 )
               )
            )

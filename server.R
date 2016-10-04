@@ -5,7 +5,7 @@ shinyServer(
     
     #Subset data based on checkbox
     data <- reactive({
-      desLA <- which(SpPolysDF@data$council %in% input$LA)
+      desLA <- which(SpPolysDF@data$council %in% input$datazoneLA)
       data <- SpPolysDF[desLA,]
     })
     output$LAplot<-renderMapview({
@@ -30,36 +30,51 @@ shinyServer(
     })
     
     output$neighbourhoodPlot <- renderLeaflet({
-      nP <- leaflet(data())  %>%
+        nP <- leaflet(SpPolysDF) %>%
         addTiles() %>%
-       addPolygons(smoothFactor = 1, weight = 1.5, fillOpacity = 0.7,
-                    fillColor = "grey", color = "black")
+    #    setView(lng = -4.226, lat = 56.791935, zoom =7) %>%
+       addPolygons(smoothFactor = 1.5, weight = 1.5, fillOpacity = 0.7,
+                      layerId = ~group, fillColor = "grey", color = "black")
+      return(nP)
     })
     
     observeEvent(input$rerend, {
-      data <- data()
+      rnddta <- data()
       leafletProxy("neighbourhoodPlot") %>%
-      addPolygons(smoothFactor = 1, weight = 1.5, fillOpacity = 0.7,
-                  fillColor = "grey", color = "black", data = data)
+        clearShapes() %>%
+      addPolygons(smoothFactor = 1.5, weight = 1.5, fillOpacity = 0.7,
+                  layerId = ~group, fillColor = "grey", color = "black", data = rnddta)
     })
     
     observeEvent(
-    eventExpr = input$selectAll,
+    eventExpr = input$selectAllDZ,
     handlerExpr = 
     {
         updateCheckboxGroupInput(session = session,
-                                 inputId = "LA",
+                                 inputId = "datazoneLA",
                                  selected = unique(SpPolysDF@data$council))
       }
     )
     observeEvent(
-      eventExpr = input$deselectAll,
+      eventExpr = input$deselectAllDZ,
       handlerExpr = 
       {
         updateCheckboxGroupInput(session = session,
-                                 inputId = "LA",
+                                 inputId = "datazoneLA",
                                  selected = NA)
       }
     )
+    LASubset <- reactive({
+      subDta <- LAdta[LAdta$`Local Authority` %in% input$LA & LAdta$Date %in% input$laYear & LAdta$Title %in% input$laIndicator, c(1,3)]
+    })
+    output$LABasicStats <- DT::renderDataTable({
+      dat <- LASubset()
+      tblOut <- datatable(dat)
+    })
+    output$LABarGraph <- renderPlot({
+      dat <- LASubset()
+      pp <- ggplot(data = dat) +
+        geom_bar(aes(x = reorder(`Local Authority`, `value`), y = `value`), fill = "black",stat = "identity")
+    })
   }
 )
