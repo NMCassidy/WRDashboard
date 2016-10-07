@@ -15,9 +15,9 @@ shinyServer(
       #            fillColor = "grey", color = "black")
     })
     
-    #Inputs
+  #Inputs for Local Authority Data Explorer Page
     output$laSubDomUI <- renderUI({
-      LAdataset <- LAdta[LAdta$Domain %in% input$laDomain,9]
+      LAdataset <- LAdta[LAdta$Domain %in% input$laDomain ,9]
       selectInput("laSubDom", "Select Sub-Domain", unique(LAdataset), selected = NULL)
     })
     output$laIndicatorUI <- renderUI({
@@ -27,6 +27,25 @@ shinyServer(
     output$laYearUI <- renderUI({
       LAdataset<- LAdta[LAdta$Title %in% input$laIndicator, 5]
      selectInput("laYear", "Select Time Series", unique(LAdataset), selected = NULL)
+    })
+    
+  #Generate UIs for Data Zone Explorer Page
+    output$dzdataSubDomUI <- renderUI({
+      DZdataset <- mtaDZ[mtaDZ$Domain %in% input$dzdataDomain, 4]
+      selectInput("dzdataSubDom", "Select Sub-Domain", unique(DZdataset), selected = NULL)
+    })
+    output$dzdataSubSubDomUI <- renderUI({
+      DZdataset <- mtaDZ[mtaDZ$`Sub-domain` %in% input$dzdataSubDom, 5]
+      selectInput("dzdataSubSubDom", "Select Sub-Domain", unique(DZdataset), selected = NULL)
+    })
+    output$dzdataIndicatorUI <- renderUI({
+      DZdataset <- mtaDZ[mtaDZ$Topic %in% input$dzdataSubSubDom, 2]
+      selectInput("dzdataIndicator", "Select Indicator", unique(DZdataset), selected = NULL)
+    })
+    output$dzdataYearUI <- renderUI({
+      subVar <- mtaDZ[mtaDZ$Title %in% input$dzdataIndicator, 1]
+      DZdataset <- DZdta[DZdta$Indicator %in% subVar, 4]
+      selectInput("dzdataYear", "Select Time Series", unique(DZdataset), selected = NULL)
     })
     
     output$neighbourhoodPlot <- renderLeaflet({
@@ -65,16 +84,34 @@ shinyServer(
       }
     )
     LASubset <- reactive({
-      subDta <- LAdta[LAdta$`Local Authority` %in% input$LA & LAdta$Date %in% input$laYear & LAdta$Title %in% input$laIndicator, c(1,3)]
+      subDta <- LAdta[LAdta$`Local Authority` %in% input$LA & LAdta$Date %in% input$laYear & LAdta$Title %in% input$laIndicator, c(1,3,6)]
+    })
+    output$LASummaryStats <- renderDataTable({
+      dat <- LASubset()
+      tpRow <- c("column", "mean", "median", "min", "max", "Q1", "Q2")
+      btRow <- data.frame("value", mean(dat$value), median(dat$value), min(dat$value), max(dat$value), 
+                 quantile(dat$value, 0.25, names = FALSE),quantile(dat$value, 0.75, names = FALSE))
+      colnames(btRow) <- tpRow
+      datatable(btRow, options =list(scrollX = TRUE, dom = "t"))
     })
     output$LABasicStats <- DT::renderDataTable({
       dat <- LASubset()
-      tblOut <- datatable(dat)
+      tblOut <- datatable(dat, extensions = "Responsive",options = list(pageLength = 32, scrollY = 500))
     })
     output$LABarGraph <- renderPlot({
       dat <- LASubset()
       pp <- ggplot(data = dat) +
-        geom_bar(aes(x = reorder(`Local Authority`, `value`), y = `value`), fill = "black",stat = "identity")
+        geom_bar(aes(x = reorder(`Local Authority`, `value`), y = `value`), fill = "black",stat = "identity") +
+        geom_hline(yintercept = median(dat$value), colour = "red")
+      return(pp)
+    })
+    output$dzTable <- DT::renderDataTable({
+      datatable(geoLk[c(1,9, 3, 10)], rownames = FALSE, filter = "bottom",
+                options = list(pageLength = 25))
+    })
+    output$mtaDtaTxt <- renderText({
+      dat <-LASubset()
+      mtaDZ[mtaDZ$Title == input$dzdataIndicator,8]
     })
   }
 )
