@@ -13,7 +13,7 @@ shinyUI(dashboardPage(
     tabItems(
       tabItem(tabName = "lamap",
            fluidRow(
-             column(width = 12, box(mapviewOutput("LAplot", height = "500px"), width = NULL))
+             column(width = 12, box(mapviewOutput("LAplot", height = "800px"), width = NULL))
            )
       ),
       tabItem(tabName = "ladata",
@@ -55,7 +55,7 @@ shinyUI(dashboardPage(
                                  unique(SpPolysDF@data$council), selected = unique(SpPolysDF@data$council))
                               ,width = NULL)    
                 ),
-                column(width = 8,
+                column(width = 9,
                      box(
                        leafletOutput("neighbourhoodPlot", height = "700px"), width=NULL
                      ),

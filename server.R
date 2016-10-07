@@ -52,7 +52,7 @@ shinyServer(
         nP <- leaflet(SpPolysDF) %>%
         addTiles() %>%
     #    setView(lng = -4.226, lat = 56.791935, zoom =7) %>%
-       addPolygons(smoothFactor = 1.5, weight = 1.5, fillOpacity = 0.7,
+       addPolygons(smoothFactor = 1.3, weight = 1.5, fillOpacity = 0.7,
                       layerId = ~group, fillColor = "grey", color = "black")
       return(nP)
     })
@@ -61,7 +61,7 @@ shinyServer(
       rnddta <- data()
       leafletProxy("neighbourhoodPlot") %>%
         clearShapes() %>%
-      addPolygons(smoothFactor = 1.5, weight = 1.5, fillOpacity = 0.7,
+      addPolygons(smoothFactor = 1.3, weight = 1.5, fillOpacity = 0.7,
                   layerId = ~group, fillColor = "grey", color = "black", data = rnddta)
     })
     
@@ -96,7 +96,8 @@ shinyServer(
     })
     output$LABasicStats <- DT::renderDataTable({
       dat <- LASubset()
-      tblOut <- datatable(dat, extensions = "Responsive",options = list(pageLength = 32, scrollY = 500))
+      tblOut <- datatable(dat, extensions = "Responsive", rownames = FALSE,
+                          options = list(pageLength = 32, scrollY = 500, dom = "t"))
     })
     output$LABarGraph <- renderPlot({
       dat <- LASubset()
@@ -106,8 +107,8 @@ shinyServer(
       return(pp)
     })
     output$dzTable <- DT::renderDataTable({
-      datatable(geoLk[c(1,9, 3, 10)], rownames = FALSE, filter = "bottom",
-                options = list(pageLength = 25))
+      datatable(geoLk[,c(1,9, 3, 10)],extensions = "Scroller", rownames = FALSE, filter = "bottom",
+                options = list(scrollY = 300, scroller = TRUE))
     })
     output$mtaDtaTxt <- renderText({
       dat <-LASubset()
