@@ -97,14 +97,18 @@ shinyServer(
     output$LABasicStats <- DT::renderDataTable({
       dat <- LASubset()[c(1,3,2)]
       tblOut <- datatable(dat, extensions = "Responsive", rownames = FALSE,
-                          options = list(pageLength = 32, scrollY = 500, dom = "t"),
+                          options = list(pageLength = 32, scrollY = 380, dom = "t"),
                           colnames = c("Local Authority", "Indicator", "Value"))
     })
     output$LABarGraph <- renderPlot({
+      options(scipen = 1000)
       dat <- LASubset()
       pp <- ggplot(data = dat) +
         geom_bar(aes(x = reorder(`Local Authority`, `value`), y = `value`), fill = "black",stat = "identity") +
-        geom_hline(yintercept = median(dat$value), colour = "red")
+        geom_hline(yintercept = median(dat$value), colour = "red")+
+        theme_bw()+
+        xlab("")+
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
       return(pp)
     })
     output$dzTable <- DT::renderDataTable({

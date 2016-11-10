@@ -12,7 +12,7 @@ shinyUI(dashboardPage(
   dashboardBody(
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "custom.css"),
-      tags$style(HTML(".checkbox {margin-top:0;}"))
+      tags$style(HTML("div.checkbox {margin-top:0;}"))
     ),
     tabItems(
       tabItem(tabName = "lamap",
@@ -22,7 +22,7 @@ shinyUI(dashboardPage(
       ),
       tabItem(tabName = "ladata",
             fluidRow(
-              column(width = 3, box(width = NULL, title = "Select a Local Authority",
+              column(width = 3, box(width = NULL, title = "Select Local Authority",
                 div(class = "chckBx", checkboxGroupInput("LA", label =NULL,
                 unique(LAdta$`Local Authority`), selected = unique(LAdta$`Local Authority`), inline = FALSE)
                     )
@@ -39,12 +39,12 @@ shinyUI(dashboardPage(
                           uiOutput("laYearUI")
                           )
                       ),
-              column(width = 10,
+              column(width = 9,
                      box(
                        DT::dataTableOutput("LASummaryStats"), width = NULL
                      ),
                      box(
-                       DT::dataTableOutput("LABasicStats"), height = "600px"
+                       DT::dataTableOutput("LABasicStats"), height = "450px"
                     ),
                     box(plotOutput("LABarGraph"))
               )
@@ -54,10 +54,11 @@ shinyUI(dashboardPage(
       
       tabItem(tabName = "dzmap",
               fluidRow(
-                column(width = 3,box(actionButton("selectAllDZ", label = "Select All"),
+                column(width = 3,box(title = "Select Local Authority", 
+                                     actionButton("selectAllDZ", label = "Select All"),
                                      actionButton("deselectAllDZ", label = "Select None"),
-              checkboxGroupInput("datazoneLA", "Select a LA", 
-                                 unique(SpPolysDF@data$council), selected = unique(SpPolysDF@data$council))
+              div(class = "chckBx",checkboxGroupInput("datazoneLA", label = NULL, 
+                                 unique(SpPolysDF@data$council), selected = unique(SpPolysDF@data$council)))
                               ,width = NULL)    
                 ),
                 column(width = 9,
@@ -80,13 +81,13 @@ shinyUI(dashboardPage(
                 )
               ),
               fluidRow(
-                column(width = 2, box(
-                    checkboxGroupInput("datazoneLA2", "Select a LA",
+                column(width = 3, box(title = "Select Local Authority",
+                   div(class = "chckBx", checkboxGroupInput("datazoneLA2", label = NULL,
                                        unique(geoLk$laname), selected = unique(geoLk$laname)
-                    ), width = NULL
+                    )), width = NULL
                   )
                 ),
-                column(width = 8, box(
+                column(width = 7, box(
                   DT::dataTableOutput("dzTable"), width = NULL
                   )
                  ),
