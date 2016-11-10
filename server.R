@@ -9,9 +9,9 @@ shinyServer(
       data <- SpPolysDF[desLA,]
     })
     output$LAplot<-renderMapview({
-        lP<-mapView(SpPolysLA, homebutton = FALSE) #%>%
-      #  addTiles()%>%
-      #  addPolygons(smoothFactor = 1, weight = 1.5, fillOpacity = 0.7,
+        lP<-mapView(SpPolysLA) #%>%
+       # addTiles()%>%
+      #  addPolygons(smoothFactor = 1.3, weight = 1.5, fillOpacity = 0.7,
       #            fillColor = "grey", color = "black")
     })
     
@@ -88,16 +88,17 @@ shinyServer(
     })
     output$LASummaryStats <- renderDataTable({
       dat <- LASubset()
-      tpRow <- c("column", "mean", "median", "min", "max", "Q1", "Q2")
+      tpRow <- c("", "mean", "median", "min", "max", "Q1", "Q2")
       btRow <- data.frame("value", mean(dat$value), median(dat$value), min(dat$value), max(dat$value), 
                  quantile(dat$value, 0.25, names = FALSE),quantile(dat$value, 0.75, names = FALSE))
       colnames(btRow) <- tpRow
-      datatable(btRow, options =list(scrollX = TRUE, dom = "t"))
+      datatable(btRow, rownames = FALSE,options =list(scrollX = TRUE, dom = "t"))
     })
     output$LABasicStats <- DT::renderDataTable({
-      dat <- LASubset()
+      dat <- LASubset()[c(1,3,2)]
       tblOut <- datatable(dat, extensions = "Responsive", rownames = FALSE,
-                          options = list(pageLength = 32, scrollY = 500, dom = "t"))
+                          options = list(pageLength = 32, scrollY = 500, dom = "t"),
+                          colnames = c("Local Authority", "Indicator", "Value"))
     })
     output$LABarGraph <- renderPlot({
       dat <- LASubset()
